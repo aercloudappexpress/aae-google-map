@@ -1,0 +1,119 @@
+<!--
+@license
+Copyright (c) 2015 The AerCloud Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://aercloud.github.io/LICENSE.txt
+The complete set of authors may be found at http://aercloud.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://aercloud.github.io/CONTRIBUTORS.txt
+Code distributed by Aeris as part of the aercloud project is also
+subject to an additional IP rights grant found at http://aercloud.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../google-map/google-map.html">
+<link rel="import" href="../google-apis/google-maps-api.html">
+<link rel="import" href="../iron-signals/iron-signals.html">
+
+<dom-module id="aae-google-map">
+  <template>
+    <iron-signals on-iron-signal-locationupdate="_updateLocation"></iron-signals>
+    <google-maps-api id="mapapi"></google-maps-api>
+    <google-map latitude="{{center.lat}}" longitude="{{center.lon}}" zoom="{{zoom}}" id="gmap">
+    </google-map>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'aae-google-map',
+
+      properties: {
+        enableDrawingTools: {
+          type: Boolean,
+          value: false
+        },
+        center: {
+          type: Object,
+          value: function() {
+            return {'lat': Number, 'lon': Number};
+          }
+        },
+        zoom: {
+          type: Number,
+          value: 16
+        },
+        assets: {
+          type: Array,
+          value: []
+        },
+        _markers: {
+          type: Array,
+          value: []
+        }
+      },
+      _initDrawingManager: function() {
+        if (this.enableDrawingTools) {
+          if (this.$.gmap.map && this.$.mapapi.api) {
+            var gmapApi = this.$.mapapi.api;
+            var drawingManager = new gmapApi.drawing.DrawingManager({
+              drawingMode: google.maps.drawing.OverlayType.MARKER,
+              drawingControl: true,
+              drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT,
+                drawingModes: [
+                  google.maps.drawing.OverlayType.MARKER,
+                  google.maps.drawing.OverlayType.CIRCLE,
+                  google.maps.drawing.OverlayType.POLYGON
+                ]
+              },
+              circleOptions: {
+                fillColor: '#A4A4A4',
+                fillOpacity: 0.5,
+                strokeWeight: 3,
+                clickable: false,
+                editable: true,
+                zIndex: 1
+              }
+            });
+            drawingManager.setMap(this.$.gmap.map);
+            gmapApi.event.addListener(drawingManager, 'circlecomplete', this._circlecomplete);
+            console.log("Loaded google map and api");
+          } else {
+            this.async(this._initDrawingManager, 1000);
+          }
+        }
+      },
+      _circlecomplete: function(circle) {
+        var radius = circle.getRadius();
+        console.log("Circle center: " + circle.center + ", radius " + radius);
+      },
+      ready: function() {
+        this._initDrawingManager();
+        if (this.assets) {
+          for (var i in this.assets) {
+            this._updateAsset(this.assets[i]);
+          }
+        }
+      },
+      _updateLocation: function(e, asset) {
+        this._updateAsset(asset);
+      },
+      _updateAsset: function(asset) {
+        var marker;
+        if (this._markers[asset.id]) {
+          marker = this._markers[asset.id];
+          marker.longitude = asset.longitude;
+          marker.latitude = asset.latitude;
+        } else {
+          marker = document.createElement('google-map-marker');
+          if (asset.icon) {
+            marker.icon = asset.icon;
+          }
+          marker.id = 'marker'+asset.id;
+          marker.longitude = asset.longitude;
+          marker.latitude = asset.latitude;
+          this._markers[asset.id] = marker;
+          Polymer.dom(this.$.gmap).appendChild(marker);
+        }
+      }
+    });
+  </script>
+</dom-module>

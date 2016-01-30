@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <!-- Step 1: import the element to test -->
+    <link rel="import" href="../aae-google-map.html">
+  </head>
+  <body>
+
+    <!-- You can use the document as a place to set up your fixtures. -->
+    <aae-google-map assets='[{"id": 1, "latitude": 37.387495, "longitude": -121.966857}, {"id": 2, "latitude": 37.392142, "longitude": -121.962839}]'>
+    </aae-google-map>
+
+    <script>
+      var myEl = document.querySelector("aae-google-map");
+      suite('<aae-google-map>', function() {
+
+        test('validate number of markers on map', function() {
+          expect(Polymer.dom(myEl.$.gmap).querySelectorAll('google-map-marker').length).to.be.equal(2);
+        });
+
+        test('validate location update of marker', function() {
+          myEl.fire('iron-signal', {name: 'locationupdate', data: {'id':1, 'latitude': 38.387495, 'longitude': -122.966857}});
+          var marker = Polymer.dom(myEl.$.gmap).querySelector('#marker1');
+          expect(marker.latitude).to.be.equal(38.387495);
+          expect(marker.longitude).to.be.equal(-122.966857);
+        });
+
+      });
+    </script>
+
+  </body>
+</html>

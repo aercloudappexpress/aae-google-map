@@ -1,0 +1,35 @@
+{
+  "name": "aae-google-map",
+  "version": "0.1.0",
+  "authors": [
+    "Anonymous <anonymous@example.com>"
+  ],
+  "description": "Google Map extension for AppExpress.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "aercloud",
+    "seed",
+    "google-map"
+  ],
+  "main": "aae-google-map.html",
+  "license": "http://aercloud.github.io/LICENSE.txt",
+  "homepage": "https://github.com/aercloudappexpress/aae-google-map/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.0",
+    "google-map": "GoogleWebComponents/google-map#~1.1.7",
+    "google-map-api": "GoogleWebComponents/google-apis#~1.1.3"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^3.4.0"
+  }
+}
